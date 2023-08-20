@@ -2,9 +2,7 @@ library(dplyr)
 library(stringr)
 library(sjmisc)
 
-
-load('data/Survey_Data/RedCap/MAXED_redcap_long.2023-08-01.RData')
-load('data/RedCap/raw_redcap_8_17_23.RData')
+load('data/RedCap/redcap_raw.RData')
 redcap_raw <- data
 
 # Identify unique ids that match the criteria
