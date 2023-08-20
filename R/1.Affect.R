@@ -82,16 +82,12 @@ combine_plots <- function(plot_neg, plot_pos, title_text) {
   combined_plot <- plot_neg + plot_pos + plot_layout(ncol = 1) +
     plot_annotation(title = title_text,
                     caption = wrapped_caption,
-                    theme = theme(text = element_text(size = 16)) +
+                    theme = theme(text = element_text(size = 18, family = 'Avenir')) +
                       theme(plot.title.position = "plot",
                             plot.title = element_text(hjust = 0.5),
                             plot.caption = element_text(hjust = 0, size = 14)))
   return(combined_plot)
 }
-
-affect_plot_a <- combine_plots(plot_neg_a, plot_pos_a, "Affect Over Time During Self-Paced Exercise")
-affect_plot_b <- combine_plots(plot_neg_b, plot_pos_b, "Affect Over Time During Prescribed Exercise")
-
 
 
 affect_plot_a_df <- affect %>% 
@@ -100,44 +96,50 @@ affect_plot_a_df <- affect %>%
 negative_emotions <- c("Crummy", "Fatigued")
 positive_emotions <- c("Calm", "Enthusiastic")
 
-negative_fill <- "#8C2964"  # Color for negative emotions
-positive_fill <- "#66a182"  # Color for positive emotions
+positive_fill <-"darkblue"  # Color for negative emotions
+negative_fill <- "darkgrey"  # Color for positive emotions
 
 custom_colors <- c("#A89610", "#4d10bd")
 
 
 # Plot for negative emotions
 plot_neg_a <- ggplot(affect_plot_a_df %>% filter(variable %in% negative_emotions), 
-                   aes(x = time, y = value, group = group_factor, color = group_factor)) +
-  geom_smooth(aes(fill = group_factor), method = "lm", size = 2, linetype = 'dotted') +
+                     aes(x = time, y = value, group = group_factor, color = group_factor, fill = group_factor)) +
+  geom_smooth(method = "lm", size = 2, linetype = 'dashed', alpha = 0.2) +
   facet_wrap(~variable) +
   labs(color = 'Group') +
   theme_minimal() +
-  theme(text = element_text(size = 16), 
-        axis.title.x = element_blank(),  # Hide x-axis title
-        axis.title.y = element_blank(),  # Hide y-axis title for this plot
-        axis.text.x = element_blank(),   # Hide x-axis text/ticks
+  theme(text = element_text(size = 18, family = "Avenir"), 
+        axis.title.x = element_blank(),  
+        axis.title.y = element_blank(),  
+        axis.text.x = element_blank(),   
+        axis.text.y = element_text(size = 16),
         strip.background = element_rect(fill = negative_fill),
-        strip.text = element_text(color = 'white', face = 'bold')) +
-  scale_color_manual(values = custom_colors)+
-  scale_fill_manual(values = custom_colors)
+        strip.text = element_text(color = 'white', face = 'bold'),
+        legend.position = 'top',
+        legend.title = element_text(face = "italic")) +
+  scale_color_manual(name = 'Group', values = custom_colors) +
+  scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5, 3)
 
 # Plot for positive emotions
 plot_pos_a <- ggplot(affect_plot_a_df %>% filter(variable %in% positive_emotions), 
-                   aes(x = time, y = value, group = group_factor, color = group_factor)) +
-  geom_smooth(method = "lm", size = 2, linetype = 'dotted') +
+                     aes(x = time, y = value, group = group_factor, color = group_factor, fill = group_factor)) +
+  geom_smooth(method = "lm", size = 2, linetype = 'dashed', alpha = 0.2) +
   facet_wrap(~variable) +
-  labs(x = "Time (mins)") +   # Set y-axis title
+  labs(x = "Time (mins)") +
   theme_minimal() +
-  theme(text = element_text(size = 16), 
-        axis.title  = element_text(size = 12), 
+  theme(text = element_text(size = 18, family = "Avenir"), 
+        axis.title  = element_text(size = 14), 
         axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 16),
         strip.background = element_rect(fill = positive_fill),
         strip.text = element_text(color = 'white', face = 'bold'),
         legend.position = 'none') +
-  scale_color_manual(values = custom_colors) +
+  scale_color_manual(name = 'Group', values = custom_colors) +
+  scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5,3)
+
 
 # Combine the plots with patchwork
 
@@ -153,46 +155,55 @@ ggsave(file = 'figs/Affect_DayA.png')
 
 
 
-affect_plot_b_df <- affect %>% 
-  filter(day == 'Prescribed', variable != 'Percieved Exertion' & condition == 'Exercise')
-
+# Styling adjustments
 # Plot for negative emotions
 plot_neg_b <- ggplot(affect_plot_b_df %>% filter(variable %in% negative_emotions), 
-                     aes(x = time, y = value, group = group_factor, color = group_factor)) +
-  geom_smooth(method = "lm", size = 2, linetype = 'dashed') +
+                     aes(x = time, y = value, group = group_factor, color = group_factor, fill = group_factor)) +
+  geom_smooth(method = "lm", size = 2, linetype = 'dashed', alpha = 0.2) +
   facet_wrap(~variable) +
   labs(color = 'Group') +
   theme_minimal() +
-  theme(text = element_text(size = 16), 
-        axis.title.x = element_blank(),  # Hide x-axis title
-        axis.title.y = element_blank(),  # Hide y-axis title for this plot
-        axis.text.x = element_blank(),   # Hide x-axis text/ticks
+  theme(text = element_text(size = 18, family = "Avenir"), 
+        axis.title.x = element_blank(),  
+        axis.title.y = element_blank(),  
+        axis.text.x = element_blank(),   
+        axis.text.y = element_text(size = 16),
         strip.background = element_rect(fill = negative_fill),
-        strip.text = element_text(color = 'white', face = 'bold')) +
-  scale_color_manual(values = custom_colors)+
+        strip.text = element_text(color = 'white', face = 'bold'),
+        legend.position = 'top',
+        legend.title = element_text(face = "bold")) +
+  scale_color_manual(name = 'Group', values = custom_colors) +
+  scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5, 3)
 
 # Plot for positive emotions
 plot_pos_b <- ggplot(affect_plot_b_df %>% filter(variable %in% positive_emotions), 
-                     aes(x = time, y = value, group = group_factor, color = group_factor)) +
-  geom_smooth(method = "lm", size = 2, linetype = 'dashed') +
+                     aes(x = time, y = value, group = group_factor, color = group_factor, fill = group_factor)) +
+  geom_smooth(method = "lm", size = 2, linetype = 'dashed', alpha = 0.2) +
   facet_wrap(~variable) +
-  labs(x = "Time (mins)") +   # Set y-axis title
+  labs(x = "Time (mins)") +
   theme_minimal() +
-  theme(text = element_text(size = 16), 
-        axis.title  = element_text(size = 12), 
+  theme(text = element_text(size = 18, family = "Avenir"), 
+        axis.title  = element_text(size = 14), 
         axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 16),
         strip.background = element_rect(fill = positive_fill),
         strip.text = element_text(color = 'white', face = 'bold'),
         legend.position = 'none') +
-  scale_color_manual(values = custom_colors) +
+  scale_color_manual(name = 'Group', values = custom_colors) +
+  scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5,3)
-
 
 # Combine the plots with patchwork
 affect_plot_b <- combine_plots(plot_neg_b, plot_pos_b, "Affect Over Time During Prescribed Exercise")
 
 print(affect_plot_b)
+
+# Combine the plots with patchwork
+affect_plot_b <- combine_plots(plot_neg_b, plot_pos_b, "Affect Over Time During Prescribed Exercise")
+
+print(affect_plot_b)
+
 
 ggsave(file = 'figs/Affect_DayB.png')
 
@@ -208,7 +219,7 @@ plot_neg_c <- ggplot(affect_plot_c_df %>% filter(variable %in% negative_emotions
   facet_wrap(~variable) +
   labs(color = 'Group') +
   theme_minimal() +
-  theme(text = element_text(size = 16), 
+  theme(text = element_text(size = 18), 
         axis.title.x = element_blank(),  # Hide x-axis title
         axis.title.y = element_blank(),  # Hide y-axis title for this plot
         axis.text.x = element_blank(),   # Hide x-axis text/ticks
@@ -244,47 +255,59 @@ affect_plot_ex_df <- affect %>%
 
 custom_linetypes <- c("Self-Paced" = "dotted", "Prescribed" = "dashed")
 
+library(ggplot2)
+library(patchwork)
+
 # Plot for negative emotions
 plot_neg_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% negative_emotions), 
                       aes(x = time, y = value, group = interaction(group_factor, day), color = group_factor, linetype = day)) +
-  geom_smooth(method = "lm") +
+  geom_smooth(method = "lm", aes(fill = group_factor), size = 2, alpha = 0.2) +
   facet_wrap(~variable) +
   labs(color = 'Group',
        linetype = 'Ex Condition') +
   theme_minimal() +
   scale_linetype_manual(values = custom_linetypes, 
                         guide = guide_legend(override.aes = list(color = "black"))) +
-  theme(text = element_text(size = 16), 
-        axis.title.x = element_blank(),  # Hide x-axis title
-        axis.title.y = element_blank(),  # Hide y-axis title for this plot
-        axis.text.x = element_blank(),   # Hide x-axis text/ticks
-        strip.background = element_rect(fill = negative_fill),
-        strip.text = element_text(color = 'white', face = 'bold')) +
-  scale_color_manual(values = custom_colors)+
+  theme(
+    text = element_text(size = 18, family = "Avenir"),
+    axis.title = element_blank(),
+    axis.text = element_text(size = 16, family = "Avenir"),
+    strip.background = element_rect(fill = negative_fill),
+    strip.text = element_text(color = 'white', face = 'bold', family = "Avenir"),
+    legend.position = "top",
+    legend.title = element_text(face = "bold", family = "Avenir")
+  ) +
+  scale_color_manual(values = custom_colors) +
+  scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5, 3)
 
 # Plot for positive emotions
 plot_pos_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% positive_emotions), 
-                     aes(x = time, y = value, group = interaction(group_factor, day), color = group_factor, linetype = day)) +
-  geom_smooth(method = "lm") +
+                      aes(x = time, y = value, group = interaction(group_factor, day), color = group_factor, linetype = day)) +
+  geom_smooth(method = "lm", aes(fill = group_factor), size = 2, alpha = 0.2) +
   facet_wrap(~variable) +
   labs(x = "Time (mins)",
-       linetype = 'Ex Condition') +   # Set y-axis title
+       linetype = 'Ex Condition', 
+       y = "") +   # Set y-axis title
   theme_minimal() +  
   scale_linetype_manual(values = custom_linetypes, 
-                                           guide = guide_legend(override.aes = list(color = "black"))) +
-  theme(text = element_text(size = 16), 
-        axis.title  = element_text(size = 12), 
-        axis.title.y = element_blank(),
-        strip.background = element_rect(fill = positive_fill),
-        strip.text = element_text(color = 'white', face = 'bold'),
-        legend.position = 'none') +
+                        guide = guide_legend(override.aes = list(color = "black"))) +
+  theme(
+    text = element_text(size = 18, family = "Avenir"),
+    axis.title = element_text(size = 14, family = "Avenir"),
+    axis.text = element_text(size = 16, family = "Avenir"),
+    strip.background = element_rect(fill = positive_fill),
+    strip.text = element_text(color = 'white', face = 'bold', family = "Avenir"),
+    legend.position = 'none'
+  ) +
   scale_color_manual(values = custom_colors) +
-  ylim(-0.5,3)
+  scale_fill_manual(name = 'Group', values = custom_colors) +
+  ylim(-0.5, 3)
 
 # Combine the plots with patchwork
 affect_plot_ex <- combine_plots(plot_neg_ex, plot_pos_ex, "Affect Over Time During Exercise")
 
-print(affect_plot_ex)
+
+(affect_plot_ex)
 
 ggsave(affect_plot_ex, file = 'figs/affect_plot_ex.png')

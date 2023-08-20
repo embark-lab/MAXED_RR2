@@ -1,0 +1,35 @@
+---
+title: "MAXED Results Slides"
+format: pptx
+editor: visual
+---
+
+![](figs/Affect_DayA.png){#Affect_DayA fig-align="center"}
+
+------------------------------------------------------------------------
+
+![](figs/Affect_DayB.png){#Affect_DayB fig-align="center"}
+
+------------------------------------------------------------------------
+
+![](figs/affect_plot_ex.png){#Affect fig-align="center"}
+
+------------------------------------------------------------------------
+
+![](figs/biss_plot.png){fig-align="center"}
+
+------------------------------------------------------------------------
+
+![](figs/hr_plot.png)
+
+------------------------------------------------------------------------
+
+![](figs/distance_plot.png){fig-align="center"}
+
+------------------------------------------------------------------------
+
+![](figs/watts_plot.png){fig-align="center"}
+
+------------------------------------------------------------------------
+
+## ![](figs/ex_params_plot.png){fig-align="center"}
