@@ -1,6 +1,12 @@
 library(dplyr)
 library(stringr)
 library(sjmisc)
+library(haven)
+library(tidyr)
+library(ggplot2)
+library(patchwork)
+library(haven)
+
 
 load('data/RedCap/redcap_raw.RData')
 redcap_raw <- data
@@ -30,6 +36,15 @@ redcap_raw_enrolled <- redcap_raw_enrolled %>%
                                   'questionnaires_arm_7' = 'Parents')) |> 
   select(-c(redcap_event_name)) |> 
   select(record_id, study_visit, everything())
+
+redcap_raw_enrolled <- redcap_raw_enrolled %>% 
+  mutate(participant_assignment = zap_labels(participant_assignment) %>% as.character()) %>% 
+  mutate(group = recode(participant_assignment, 
+                        "1"="0", 
+                        "2"="1", 
+                        "3"="1",
+                        "4"="1")) %>% 
+  mutate(group_factor = factor(group, levels = c("0", "1"), labels = c('Control', "ED")))
   
 save(redcap_raw_enrolled, file = 'data/RedCap/redcap_raw_enrolled.RData')
 
