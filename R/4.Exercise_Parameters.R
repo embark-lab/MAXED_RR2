@@ -95,7 +95,7 @@ save(ex_data, file = 'data/Exercise_Params/Exercise_Session_Data.RData')
 custom_linetypes <- c("Self-Paced" = "dotted", "Prescribed" = "dashed")
 
 # graph of HR over time
-custom_colors <- c("#1a4e66", "#fc6d46")
+custom_colors <- c("#fc6d46","#1a4e66")
 
 ex_data_hr <- ex_data |>  
   filter(variable == 'Heart Rate') |> 
@@ -131,7 +131,7 @@ hr_plot <- ggplot(ex_data_hr,
 
 hr_plot
 
-ggsave(hr_plot, file = 'figs/hr_plot.png')
+ggsave(hr_plot, file = 'figs/4.ex_params//hr_plot.png')
 
 # Distance
 
@@ -165,7 +165,7 @@ distance_plot <- ggplot(ex_data |> filter(variable == 'Distance'),
 
 distance_plot
 
-ggsave(distance_plot, file = 'figs/distance_plot.png')
+ggsave(distance_plot, file = 'figs/4.ex_params//distance_plot.png')
 
 # Watts
 
@@ -199,14 +199,14 @@ watts_plot <- ggplot(ex_data |> filter(variable == 'Watts'),
 
 watts_plot
 
-ggsave(watts_plot, file = 'figs/watts_plot.png')
+ggsave(watts_plot, file = 'figs/4.ex_params//watts_plot.png')
 
 hr_plot_nolegend <- hr_plot + theme(legend.position = 'none', axis.title.x = element_blank(), axis.title.y = element_blank()) +
   labs(title = '% Max Heart Rate')
 distance_plot_nolegend <- distance_plot + theme(legend.position = 'none', axis.title.x = element_blank(), axis.title.y = element_blank()) +
-  labs(title = 'Distance')
+  labs(title = 'Distance (miles)')
 watts_plot_nolegend <- watts_plot + theme(legend.position = 'none', axis.title.x = element_blank(), axis.title.y = element_blank()) +
-  labs(title = 'Watts')
+  labs(title = 'Effort (watts)')
 
 
 legend<- get_legend(hr_plot)
@@ -215,12 +215,12 @@ legend<- get_legend(hr_plot)
 combined_plots <- hr_plot_nolegend / distance_plot_nolegend / watts_plot_nolegend 
 
 # Lay out the plots
-ex_params_plot <- combined_plots + plot_layout(ncol = 3)
+ex_params_plot <- combined_plots + plot_layout(ncol = 3) 
 
 # Create an annotation for the title
 plot_annotation <- plot_annotation(
   title = 'Exercise Parameters Over Exercise Sessions',
-  caption = 'Time',
+  caption = 'Time (mins)',
   theme = theme(
     plot.title = element_text(size = 20, hjust = 0.5, face = "bold"),
     plot.caption = element_text(size = 20, hjust = 0.5, face = "bold"))
@@ -238,7 +238,7 @@ title_plot <- ggplot() +
 
 x_label_plot <- ggplot() + 
   theme_void() +
-  labs(caption = 'Time') +
+  labs(caption = 'Time (mins)') +
   theme(plot.caption = element_text(size = 20, hjust = 0.5)) +
   coord_cartesian(clip = 'off') +
   theme(plot.margin = margin(t = 0, b = 0, l = 0, r = 0, "pt"))
@@ -255,8 +255,10 @@ ex_params_plot <- (title_plot /
   plot_layout(heights = c(0.02, 0.05, 1, 0.02))
 
 
-ex_params_plot
+ex_params_plot <- ex_params_plot &   # Left alignment of caption
+  theme(panel.background = element_rect(fill = 'transparent', colour = 'transparent'),
+        plot.background = element_rect(fill = 'transparent', colour = 'transparent')) 
 
-ggsave(ex_params_plot, file = 'figs/ex_params_plot.png')
+ggsave(ex_params_plot, file = 'figs/4.ex_params/ex_params_plot.png')
 
 

@@ -5,8 +5,6 @@ library(haven)
 library(tidyr)
 library(ggplot2)
 library(patchwork)
-library(haven)
-library(extrafont)
 
 
 load('data/RedCap/redcap_raw_enrolled.RData')
@@ -69,17 +67,21 @@ save(affect, file = 'data/affect_data/affect_data.RData')
 
 combine_plots <- function(plot_neg, plot_pos, title_text) {
   caption_text <- "Note: Responses rated every 5 minutes on 5-point Likert scale from \n 0 (Do Not Feel) to 4 (Feel Very Strongly)"
-  wrapped_caption <- str_wrap(caption_text, width = 100)  
+  wrapped_caption <- str_wrap(caption_text, width = 80)  
   
   combined_plot <- plot_neg + plot_pos + plot_layout(ncol = 1) +
     plot_annotation(title = title_text,
                     caption = wrapped_caption,
-                    theme = theme(text = element_text(size = 18, family = 'Avenir')) +
+                    theme = theme(text = element_text(size = 18, family = 'Avenir', face = "bold"))) &
                       theme(plot.title.position = "plot",
                             plot.title = element_text(hjust = 0.5),
-                            plot.caption = element_text(hjust = 0, size = 14)))
+                            plot.caption = element_text(hjust = 0, size = 14)) +
+    theme(panel.background = element_rect(fill = 'transparent', colour = 'transparent'),
+          plot.background = element_rect(fill = 'transparent', colour = 'transparent'))  # added this line
+                          
   return(combined_plot)
 }
+
 
 
 affect_plot_a_df <- affect %>% 
@@ -91,7 +93,7 @@ positive_emotions <- c("Calm", "Enthusiastic")
 positive_fill <-"#c2b824"  # Color for negative emotions
 negative_fill <- "darkgrey"  # Color for positive emotions
 
-custom_colors <- c("Control" = "#1a4e66", "ED" = "#fc6d46")
+custom_colors <- c("ED" = "#1a4e66", "Control" = "#fc6d46")
 
 
 # Plot for negative emotions
@@ -143,7 +145,7 @@ affect_plot_a <- combine_plots(plot_neg_a, plot_pos_a, "Affect Over Time During 
 
 affect_plot_a
 
-ggsave(file = 'figs/Affect_DayA.png')
+ggsave(file = 'figs/2.affect/Affect_DayA.png')
 
 affect_plot_b_df <- affect %>% 
   filter(day == 'Prescribed' & variable != 'Percieved Exertion' & condition == 'Exercise')
@@ -168,6 +170,7 @@ plot_neg_b <- ggplot(affect_plot_b_df %>% filter(variable %in% negative_emotions
   scale_color_manual(name = 'Group', values = custom_colors) +
   scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5, 3)
+
 
 # Plot for positive emotions
 plot_pos_b <- ggplot(affect_plot_b_df %>% filter(variable %in% positive_emotions), 
@@ -198,7 +201,7 @@ affect_plot_b <- combine_plots(plot_neg_b, plot_pos_b, "Affect Over Time During 
 print(affect_plot_b)
 
 
-ggsave(file = 'figs/Affect_DayB.png')
+ggsave(file = 'figs/2.affect/Affect_DayB.png')
 
 
 
@@ -240,16 +243,13 @@ plot_pos_c <- ggplot(affect_plot_c_df %>% filter(variable %in% positive_emotions
 # Combine the plots with patchwork
 affect_plot_c <- combine_plots(plot_neg_c, plot_pos_c, "Affect Over Time During Rest")
 
-ggsave(affect_plot_c, file = 'figs/Rest_Affect.png')
+ggsave(affect_plot_c, file = 'figs/2.affect/Rest_Affect.png')
 
 affect_plot_ex_df <- affect %>% 
   filter(day %in% c('Prescribed', 'Self-Paced') & variable != 'Percieved Exertion' & condition == 'Exercise')
 
 
 custom_linetypes <- c("Self-Paced" = "dotted", "Prescribed" = "dashed")
-
-library(ggplot2)
-library(patchwork)
 
 # Plot for negative emotions
 plot_neg_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% negative_emotions), 
@@ -268,8 +268,7 @@ plot_neg_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% negative_emotio
     strip.background = element_rect(fill = negative_fill),
     strip.text = element_text(color = 'white', face = 'bold', family = "Avenir"),
     legend.position = "top",
-    legend.title = element_text(face = "bold", family = "Avenir")
-  ) +
+    legend.title = element_text(face = "bold", family = "Avenir")) +
   scale_color_manual(values = custom_colors) +
   scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5, 3)
@@ -287,7 +286,7 @@ plot_pos_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% positive_emotio
                         guide = guide_legend(override.aes = list(color = "black"))) +
   theme(
     text = element_text(size = 18, family = "Avenir"),
-    axis.title = element_text(size = 14, family = "Avenir"),
+    axis.title = element_blank(),
     axis.text = element_text(size = 16, family = "Avenir"),
     strip.background = element_rect(fill = positive_fill),
     strip.text = element_text(color = 'white', face = 'bold', family = "Avenir"),
@@ -297,10 +296,13 @@ plot_pos_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% positive_emotio
   scale_fill_manual(name = 'Group', values = custom_colors) +
   ylim(-0.5, 3)
 
+ggsave(plot_neg_ex, file = 'figs/2.affect/neg_plot.png')
+
+
 # Combine the plots with patchwork
 affect_plot_ex <- combine_plots(plot_neg_ex, plot_pos_ex, "Affect Over Time During Exercise")
 
 
-affect_plot_ex
+ggsave(affect_plot_ex, file = 'figs/2.affect/affect_plot_ex.png',height = 6, width = 8, units = "in", bg = 'transparent')
 
-ggsave(affect_plot_ex, file = 'figs/affect_plot_ex.png')
+       

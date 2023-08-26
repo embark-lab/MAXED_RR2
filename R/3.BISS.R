@@ -63,7 +63,7 @@ save(biss, file = 'data/BISS/biss_data.RData')
 # Define custom line types
 custom_linetypes <- c("Self-Paced" = "dotted", "Prescribed" = "dashed")
 
-custom_colors <- c("#1a4e66", "#fc6d46")
+custom_colors <- c("#fc6d46","#1a4e66")
 biss$variable <- factor(biss$variable, levels = c("Phys Attract", "Appearance", "Looks", "Shape", 'Weight', 'BISS Average'))
 
 # Define custom line types
@@ -96,13 +96,14 @@ wrapped_caption <- str_wrap(caption_text, width = 100)
 biss_plot <- biss_plot +
   plot_annotation(title = "Body Image States Scale Scores Over Time During Exercise",
                   caption = wrapped_caption,
-                  theme = theme(text = element_text(size = 14, family = "Avenir")) +
+                  theme = theme(text = element_text(size = 14, family = "Avenir")) &
                     theme(plot.title.position = "plot",   # Position of title within plot area
-                          plot.title = element_text(hjust = 0.5, family = "Avenir"),
-                          plot.caption = element_text(hjust = 0, size = 14, family = "Avenir"))   # Left alignment of caption
-  )
+                          plot.title = element_text(hjust = 0.5, family = "Avenir", face = "bold"),
+                          plot.caption = element_text(hjust = 0, size = 14, family = "Avenir")) &   # Left alignment of caption
+ theme(panel.background = element_rect(fill = 'transparent', colour = 'transparent'),
+  plot.background = element_rect(fill = 'transparent', colour = 'transparent')) )
 
 biss_plot
 
 
-ggsave(file = 'figs/biss_plot.png')
+ggsave(file = 'figs/3.body_image/biss_plot.png')

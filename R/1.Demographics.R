@@ -12,7 +12,7 @@ load('data/RedCap/redcap_raw_enrolled.RData')
 load('data/Survey_Data/MAXED_redcap_wide.2023-08-01.RData')
 load('data/Exercise_Params/Exercise_Session_Data.RData')
 
-group_colors <- c("Control" = "#1a4e66", "ED" = "#fc6d46")
+group_colors <- c("ED" = "#1a4e66", "Control" = "#fc6d46")
 
 mean_age <- mean(redcap_raw_enrolled$studya_age, na.rm = TRUE)
 median_age <- median(redcap_raw_enrolled$studya_age, na.rm = TRUE)
@@ -62,19 +62,22 @@ race_tab$labelPosition <- (race_tab$cum.prc + race_tab$ymin) / 2
 # Compute a good label
 race_tab$label <- paste0(race_tab$val," - ", race_tab$frq)
 
-race_colors <- c("#1a4e66", "#fc6d46", "#c2b824", "#ffd583", "" )
+race_colors <- c("#fc6d46", "#c2b824", "#ffd583", "#1a4e66","#fc6d46", "#1a4e66" )
+alpha = c(1,1,1,1,0.7,0.7)
+race_colors_2 <- scales::alpha(race_colors, alpha)
+
 
 race_donut <- ggplot(race_tab, aes(ymax=cum.prc, ymin=ymin, xmax=3, xmin=0.5, fill=val)) +
   geom_rect() +
   geom_text(x = 5, aes(y=labelPosition, label=label, color = val), size=4) + # x here controls label position (inner / outer)
-  scale_fill_brewer(palette=3) +
-  scale_color_brewer(palette=3) +
+  scale_fill_manual(values = race_colors_2) +
+  scale_color_manual(values = race_colors_2) +
   coord_polar(theta="y") +
   xlim(c(-1, 5.5)) +
   theme_void() +
   labs(title = 'Participant Race and Ethnicity') +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0.5, vjust = -10, size = 16, family = "Avenir", face = "bold"),
+        plot.title = element_text(hjust = 0.5, vjust = -8, size = 16, family = "Avenir", face = "bold"),
         text = element_text(family = "Avenir"))
 
 race_donut
@@ -88,7 +91,7 @@ CET <- ex_data |> select(id, cet_total_weighted_sum:group_factor) |>
 CET_plot <- ggplot(CET, aes(x = group_factor, y = cet_total_weighted_sum, color = group_factor, fill = group_factor)) +
   geom_point() + 
   geom_boxplot(alpha = 0.2) + 
-  geom_hline(yintercept=15, linetype="dashed", color = "darkgreen") +
+  geom_hline(yintercept=15, linetype="dashed", color = "#c2b824") +
   scale_color_manual(name = 'Group', values = group_colors) +
   scale_fill_manual(name = 'Group', values = group_colors) +
   theme_minimal() + 
@@ -109,7 +112,7 @@ CET_plot <- ggplot(CET, aes(x = group_factor, y = cet_total_weighted_sum, color 
     label="clinical cutoff", 
     vjust=-1, 
     hjust=1, 
-    color="darkgreen",
+    color="#c2b824",
     size=5
   ) + 
   labs(x = element_blank(), 
@@ -145,10 +148,10 @@ dx_2 <- table(redcap_raw_enrolled$group_factor)
 
 my_waffle <- function(x, rows = 5, use_glyph = 'square', glyph_size = 6,
                       title = 'Waffle chart', 
-                      my_colors = c("Control" = "#1a4e66", 
-                                    "Partial Remission ED" = "#fc6d46",
-                                    "Subthreshold ED" = "#fc6d46",
-                                    "Full ED" = "#fc6d46"),
+                      my_colors = c("Control" = "#fc6d46", 
+                                    "Partial Remission ED" = "#1a4e66",
+                                    "Subthreshold ED" = "#1a4e66",
+                                    "Full ED" = "#1a4e66"),
                       my_alpha = c("Control" = 1, 
                                    "Partial Remission ED" = 0.3,
                                    "Subthreshold ED" = 0.6, 
