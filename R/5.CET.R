@@ -33,7 +33,7 @@ HR_data <- ex_data |>
 
 #Graph - Percent Heart Rate by CET Score During Self-Paced Exercise
 
-ggplot(HR_data |> filter (day == 'Self-Paced'), aes(x = cet_total_weighted_sum, y = avg_pct_hr, color = group_factor, fill= group_factor)) +
+CET_HR <- ggplot(HR_data |> filter (day == 'Self-Paced'), aes(x = cet_total_weighted_sum, y = avg_pct_hr, color = group_factor, fill= group_factor)) +
   geom_point() + 
   geom_smooth(method = 'lm', aes(fill = group_factor), size = 2.5, alpha = 0.2) + 
   scale_color_manual(name = 'Group', values = custom_colors) + 
@@ -43,19 +43,69 @@ ggplot(HR_data |> filter (day == 'Self-Paced'), aes(x = cet_total_weighted_sum, 
        title = 'Average HR During Self-Paced Exercise by CET Total')+
   theme_1
 
+CET_HR
 
+ggsave(CET_HR, file = 'figs/5.CET/CET_HR.png')
 
 # Graph - Percent Max HR by CET  clinical
 
-ggplot(HR_data |> filter (day == 'Self-Paced'), aes(x = as_factor(cet_clinical), y = avg_pct_hr, color = group_factor, fill = group_factor, alpha = 0.2)) +
+CET_D_HR <- ggplot(HR_data |> filter (day == 'Self-Paced'), aes(x = as_factor(cet_clinical), y = avg_pct_hr, color = group_factor, fill = group_factor, alpha = 0.2)) +
   geom_point() +
   geom_boxplot() +
 scale_color_manual(name = 'Group', values = custom_colors) +
 scale_fill_manual(name = "Group", values = custom_colors) +
    labs(x = 'CET Clinical Criteria Met',
        y = 'Average HR (% Max)', 
-       title = 'Heart Rate During Self-Paced \n Exercise based on CET Clinical Cutoff') +
+       title = 'Average Heart Rate During Self-Paced \n Exercise (10-30 min) based on CET Clinical Cutoff') +
+  theme_1 + 
+  guides(alpha = FALSE)
+
+CET_D_HR
+
+ggsave(CET_D_HR, file = 'figs/5.CET/CET_D_HR.png')
+  
+# BISS
+
+load('data/BISS/biss_data.RData')
+biss_1 <- biss |> rename(id = 'record_id') 
+biss_1$id <- as.character(biss_1$id)
+biss_cet <- full_join(cet, biss_1) |> 
+  filter(variable == 'BISS Average')
+
+
+# Distance
+distance_data <- ex_data |> 
+  filter(variable == 'Distance') |> 
+  group_by(id, day) |> 
+  mutate(distance_total = max(value, na.rm = TRUE)) |>  
+  select(id, day, group, group_factor, distance_total, cet_total_weighted_sum, cet_clinical) |> 
+  distinct()
+
+CET_distance <- ggplot(distance_data |> filter (day == 'Self-Paced'), aes(x = cet_total_weighted_sum, y = distance_total, color = group_factor, fill= group_factor)) +
+  geom_point() + 
+  geom_smooth(method = 'lm', aes(fill = group_factor), size = 2.5, alpha = 0.2) + 
+  scale_color_manual(name = 'Group', values = custom_colors) + 
+  scale_fill_manual(name = 'Group', values = custom_colors) +
+  labs(x = 'CET Total', 
+       y = 'Distance Covered (Miles)',
+       title = 'Distance Covered During Self-Paced Exercise by CET Total')+
   theme_1
 
+CET_distance
 
-  
+ggsave(CET_distance, file = 'figs/5.CET/CET_distance.png')
+
+
+CET_D_Distance <- ggplot(distance_data |> filter (day == 'Self-Paced'), aes(x = as_factor(cet_clinical), y = distance_total, color = group_factor, fill = group_factor, alpha = 0.2)) +
+  geom_point() +
+  geom_boxplot() +
+  scale_color_manual(name = 'Group', values = custom_colors) +
+  scale_fill_manual(name = "Group", values = custom_colors) +
+  labs(x = 'CET Clinical Criteria Met',
+       y = 'Distance Covered (Miles)', 
+       title = 'Distance Covered During Self-Paced \n Exercise based on CET Clinical Cutoff') +
+  theme_1 + 
+  guides(alpha = FALSE)
+
+CET_D_Distance
+ggsave(CET_D_Distance, file = 'figs/5.CET/CET_D_distance.png')

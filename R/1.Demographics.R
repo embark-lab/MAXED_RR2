@@ -6,6 +6,7 @@ library(patchwork)
 library(haven)
 library(ggthemes)
 library(cowplot)
+library(sjmisc)
 
 
 load('data/RedCap/redcap_raw_enrolled.RData')
@@ -82,7 +83,7 @@ race_donut <- ggplot(race_tab, aes(ymax=cum.prc, ymin=ymin, xmax=3, xmin=0.5, fi
 
 race_donut
 
-ggsave(race_donut, file = 'figs/demographics/race_donut.png')
+ggsave(race_donut, file = 'figs/1.demographics/race_donut.png')
 
 # CET Barplot
 CET <- ex_data |> select(id, cet_total_weighted_sum:group_factor) |> 
@@ -91,7 +92,7 @@ CET <- ex_data |> select(id, cet_total_weighted_sum:group_factor) |>
 CET_plot <- ggplot(CET, aes(x = group_factor, y = cet_total_weighted_sum, color = group_factor, fill = group_factor)) +
   geom_point() + 
   geom_boxplot(alpha = 0.2) + 
-  geom_hline(yintercept=15, linetype="dashed", color = "#c2b824") +
+  geom_hline(yintercept=15, linetype="dashed", color = "black") +
   scale_color_manual(name = 'Group', values = group_colors) +
   scale_fill_manual(name = 'Group', values = group_colors) +
   theme_minimal() + 
@@ -112,7 +113,7 @@ CET_plot <- ggplot(CET, aes(x = group_factor, y = cet_total_weighted_sum, color 
     label="clinical cutoff", 
     vjust=-1, 
     hjust=1, 
-    color="#c2b824",
+    color="black",
     size=5
   ) + 
   labs(x = element_blank(), 
@@ -124,7 +125,7 @@ CET_plot <- ggplot(CET, aes(x = group_factor, y = cet_total_weighted_sum, color 
 
 CET_plot
   
-ggsave(CET_plot, file = 'figs/demographics/CET.png')
+ggsave(CET_plot, file = 'figs/1.demographics/CET.png')
 
 
 # CET Clinical percentage
@@ -193,10 +194,8 @@ Sample_Diagnosis <- my_waffle(dx_1, rows = 3, use_glyph = "female", glyph_size =
                               title = "Sample Diagnosis")
 
 Sample_Diagnosis
-png("figs/demographics/Sample_Diagnosis.png", width = 800, height = 400, bg = "transparent")
+png("figs/1.demographics/Sample_Diagnosis.png", width = 800, height = 400, bg = "transparent")
 print(Sample_Diagnosis)
 dev.off()
 detach("package:emojifont", unload = TRUE)
 
-
-# 
