@@ -10,8 +10,13 @@ library(sjmisc)
 
 
 load('data/RedCap/redcap_raw_enrolled.RData')
-load('data/Survey_Data/MAXED_redcap_wide.2023-08-01.RData')
+load('data/Survey_Data/MAXED_redcap_wide.2023-09-04.RData')
 load('data/Exercise_Params/Exercise_Session_Data.RData')
+
+pilot_ids <- c('MAXED_1001', 'MAXED_1003', 'MAXED_1010', "MAXED_1011", "MAXED_1012")
+
+redcap_raw_enrolled <- redcap_raw_enrolled |> 
+  filter(!record_id %in% pilot_ids)
 
 group_colors <- c("ED" = "#1a4e66", "Control" = "#fc6d46")
 

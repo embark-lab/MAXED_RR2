@@ -6,10 +6,13 @@ library(tidyr)
 
 
 load('data/RedCap/redcap_raw_enrolled.RData')
+pilot_ids <- c('MAXED_1001', 'MAXED_1003', 'MAXED_1010', "MAXED_1011", "MAXED_1012")
 
+redcap_raw_enrolled <- redcap_raw_enrolled |> 
+  filter(!record_id %in% pilot_ids)
 
 biss <-  redcap_raw_enrolled |> 
-  select(record_id, starts_with('ex_phys'), starts_with ('ex_shap'), starts_with('ex_wt'), starts_with('ex_attract'), starts_with('ex_looks'), starts_with('ex_avg'))
+  select(record_id, starts_with('ex_phys'), starts_with ('ex_shap'), starts_with('ex_wt'), starts_with('ex_attract'), starts_with('ex_looks'))
 
 
 groups <- redcap_raw_enrolled %>% 
@@ -37,6 +40,7 @@ biss <- full_join(biss_a, biss_b)
 biss_numeric <- biss %>%
   mutate(across(-record_id, ~as.numeric(.)))  # Convert all except 'record_id' to numeric
 
+
 biss_long <- biss_numeric %>%
   pivot_longer(
     cols = -record_id, 
@@ -45,6 +49,21 @@ biss_long <- biss_numeric %>%
     values_to = "value"
   ) %>%
   mutate(variable = str_remove(variable, "_$"))  # Removes the trailing underscore
+
+
+# Reverse code specific variables
+biss_long <- biss_long %>%
+  mutate(value = case_when(
+    variable %in% c("ex_attract", "ex_shap") & value == 1 ~ 9,
+    variable %in% c("ex_attract", "ex_shap") & value == 2 ~ 8,
+    variable %in% c("ex_attract", "ex_shap") & value == 3 ~ 7,
+    variable %in% c("ex_attract", "ex_shap") & value == 4 ~ 6,
+    variable %in% c("ex_attract", "ex_shap") & value == 6 ~ 4,
+    variable %in% c("ex_attract", "ex_shap") & value == 7 ~ 3,
+    variable %in% c("ex_attract", "ex_shap") & value == 8 ~ 2,
+    variable %in% c("ex_attract", "ex_shap") & value == 9 ~ 1,
+    TRUE ~ value
+  ))
 
 
 biss <- left_join(biss_long, groups)
@@ -56,7 +75,22 @@ biss <- biss %>%
     variable = str_replace(variable, "^(ex)_?", "")  # Remove prefix and optional underscore
   )  |> 
   mutate(variable = recode(variable, 'phys' = 'Appearance', 'shap' = 'Shape', 'wt' = 'Weight', 'attract' = 'Phys Attract', 'looks' = 'Looks', 'avg' = 'BISS Average'),
-         day = recode(day, 'a'= 'Self-Paced', 'b' = 'Prescribed'))
+         day = recode(day, 'a'= 'Self-Paced', 'b' = 'Prescribed')) |> 
+  select(-condition)
+
+averages <- biss %>%
+  filter(variable %in% c('Weight', 'Shape', 'Phys Attract', 'Looks', 'Appearance')) %>%
+  group_by(record_id, time, day, participant_assignment, group, group_factor) %>%
+  summarise(value = mean(value, na.rm = TRUE),
+            participant_assignment = first(participant_assignment),
+            group = first(group),
+            group_factor = first(group_factor)) %>%
+  mutate(variable = 'Average') %>%
+  ungroup()
+
+# Append to the original data
+biss<- bind_rows(biss, averages) %>%
+  arrange(record_id, time, variable)
 
 save(biss, file = 'data/BISS/biss_data.RData')
 
@@ -64,7 +98,7 @@ save(biss, file = 'data/BISS/biss_data.RData')
 custom_linetypes <- c("Self-Paced" = "dotted", "Prescribed" = "dashed")
 
 custom_colors <- c("#fc6d46","#1a4e66")
-biss$variable <- factor(biss$variable, levels = c("Phys Attract", "Appearance", "Looks", "Shape", 'Weight', 'BISS Average'))
+biss$variable <- factor(biss$variable, levels = c("Phys Attract", "Appearance", "Looks", "Shape", 'Weight', 'Average'))
 
 # Define custom line types
 

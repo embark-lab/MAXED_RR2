@@ -9,7 +9,7 @@ library(haven)
 
 
 load('data/RedCap/redcap_raw.RData')
-redcap_raw <- data
+redcap_raw <- data 
 
 # Identify unique ids that match the criteria
 enrolled_ids <- redcap_raw %>%

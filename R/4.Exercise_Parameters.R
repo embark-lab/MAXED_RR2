@@ -10,7 +10,7 @@ library(ggthemes)
 library(cowplot)
 
 load('data/RedCap/redcap_raw_enrolled.RData')
-load('data/Survey_Data/MAXED_redcap_long.2023-08-22.RData')
+load('data/Survey_Data/MAXED_redcap_long.2023-09-04.RData')
 load('data/RedCap/redcap_raw.RData')
 redcap_raw <- data
 # Identify unique ids that match the criteria
@@ -43,7 +43,7 @@ ex_data$id = as.character(ex_data$id)
 cet <- MAXED_redcap_long |> 
   filter(id %in% enrolled_ids,
          timepoint == 'Day_C') |> 
-  select(id, cet_total_weighted_sum, cet_clinical)
+  select(id, cet_total_weighted_sum, cet_rigid_subscale, cet_wtcontrol_subscale, cet_enjoy_subscale, cet_mood_subscale, cet_avoid_subscale, cet_clinical)
 
 # Pull out the a and b datasets
 ex_data_a <- ex_data %>%
@@ -100,6 +100,8 @@ custom_colors <- c("#fc6d46","#1a4e66")
 ex_data_hr <- ex_data |>  
   filter(variable == 'Heart Rate') |> 
   mutate(`Percent Max HR` = value/studya_max_hr_a*100)
+
+ex_data_hr
 
 hr_plot <- ggplot(ex_data_hr, 
        aes(x = time, y = `Percent Max HR`, 

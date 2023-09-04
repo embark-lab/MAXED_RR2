@@ -9,6 +9,12 @@ library(patchwork)
 
 load('data/RedCap/redcap_raw_enrolled.RData')
 
+pilot_ids <- c('MAXED_1001', 'MAXED_1003', 'MAXED_1010', "MAXED_1011", "MAXED_1012")
+
+redcap_raw_enrolled <- redcap_raw_enrolled |> 
+  filter(!record_id %in% pilot_ids)
+
+
 groups <- redcap_raw_enrolled %>% 
   select(record_id, participant_assignment, group, group_factor) %>% 
   filter(!is.na(participant_assignment)) 
@@ -254,7 +260,7 @@ custom_linetypes <- c("Self-Paced" = "dotted", "Prescribed" = "dashed")
 # Plot for negative emotions
 plot_neg_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% negative_emotions), 
                       aes(x = time, y = value, group = interaction(group_factor, day), color = group_factor, linetype = day)) +
-  geom_smooth(method = "lm", aes(fill = group_factor), size = 2, alpha = 0.2) +
+  geom_smooth(aes(fill = group_factor), size = 2, alpha = 0.2) +
   facet_wrap(~variable) +
   labs(color = 'Group',
        linetype = 'Ex Condition') +
@@ -270,13 +276,12 @@ plot_neg_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% negative_emotio
     legend.position = "top",
     legend.title = element_text(face = "bold", family = "Avenir")) +
   scale_color_manual(values = custom_colors) +
-  scale_fill_manual(name = 'Group', values = custom_colors) +
-  ylim(-0.5, 3)
+  scale_fill_manual(name = 'Group', values = custom_colors) 
 
 # Plot for positive emotions
 plot_pos_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% positive_emotions), 
                       aes(x = time, y = value, group = interaction(group_factor, day), color = group_factor, linetype = day)) +
-  geom_smooth(method = "lm", aes(fill = group_factor), size = 2, alpha = 0.2) +
+  geom_smooth(aes(fill = group_factor), size = 2, alpha = 0.2) +
   facet_wrap(~variable) +
   labs(x = "Time (mins)",
        linetype = 'Ex Condition', 
@@ -293,8 +298,7 @@ plot_pos_ex <- ggplot(affect_plot_ex_df %>% filter(variable %in% positive_emotio
     legend.position = 'none'
   ) +
   scale_color_manual(values = custom_colors) +
-  scale_fill_manual(name = 'Group', values = custom_colors) +
-  ylim(-0.5, 3)
+  scale_fill_manual(name = 'Group', values = custom_colors) 
 
 ggsave(plot_neg_ex, file = 'figs/2.affect/neg_plot.png')
 
