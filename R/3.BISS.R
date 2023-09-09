@@ -102,7 +102,6 @@ biss$variable <- factor(biss$variable, levels = c("Phys Attract", "Appearance", 
 
 # Define custom line types
 
-# Plot for negative emotions
 biss_plot <- ggplot(biss, aes(x = time, y = value, group = interaction(group_factor, day), color = group_factor, linetype = day)) +
   geom_smooth(size = 1, aes(fill = group_factor), alpha = 0.2) +
   facet_wrap(~variable) +
